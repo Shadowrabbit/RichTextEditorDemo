@@ -20,8 +20,6 @@ public class RichTextEditor : MonoBehaviour
     public Button italicButton;
     public Button underlineButton;
     public Button strikethroughButton;
-    private int _selectionStartPos = -1;
-    private int _selectionEndPos = -1;
     private List<CharacterData> _characters = new();
 
     private void Start()
@@ -31,12 +29,6 @@ public class RichTextEditor : MonoBehaviour
 
     private void SetupEventListeners()
     {
-        // 文本输入事件
-        if (textInput != null)
-        {
-            textInput.onValueChanged.AddListener(OnTextChanged);
-        }
-
         // 富文本按钮事件
         if (boldButton != null)
             boldButton.onClick.AddListener(ApplyBold);
@@ -46,58 +38,6 @@ public class RichTextEditor : MonoBehaviour
             underlineButton.onClick.AddListener(ApplyUnderline);
         if (strikethroughButton != null)
             strikethroughButton.onClick.AddListener(ApplyStrikethrough);
-    }
-
-    private void Update()
-    {
-        // 实时检查文本选择状态
-        CheckTextSelection();
-    }
-
-    private void OnTextChanged(string newText)
-    {
-        CheckTextSelection();
-    }
-
-    private void CheckTextSelection()
-    {
-        if (textInput == null)
-        {
-            return;
-        }
-
-        // 获取选中的文本
-        var start = textInput.selectionAnchorPosition;
-        var end = textInput.selectionFocusPosition;
-        // 确保 start <= end
-        if (start > end)
-        {
-            (start, end) = (end, start);
-        }
-
-        // 检查选择范围是否有效
-        if (start == end || start < 0 || end > textInput.text.Length)
-        {
-            // 只有当之前有选择时才清空状态
-            if (_selectionStartPos == -1 && _selectionEndPos == -1)
-            {
-                return;
-            }
-
-            _selectionStartPos = -1;
-            _selectionEndPos = -1;
-            Debug.Log("选择状态清空");
-            return;
-        }
-
-        // 只有当选择范围真正改变时才更新状态
-        if (_selectionStartPos == start && _selectionEndPos == end)
-        {
-            return;
-        }
-
-        _selectionStartPos = start;
-        _selectionEndPos = end;
     }
 
     private static void ParseCharacters(string textInputText, ref List<CharacterData> characters)
@@ -243,7 +183,15 @@ public class RichTextEditor : MonoBehaviour
     // 富文本应用方法
     private void ApplyBold()
     {
-        if (textInput == null || _selectionStartPos < 0 || _selectionEndPos < 0)
+        var start = textInput.selectionAnchorPosition;
+        var end = textInput.selectionFocusPosition;
+        // 确保 start <= end
+        if (start > end)
+        {
+            (start, end) = (end, start);
+        }
+
+        if (textInput == null || start < 0 || end < 0)
         {
             Debug.LogWarning("没有有效的文本选择范围喵～");
             return;
@@ -252,7 +200,8 @@ public class RichTextEditor : MonoBehaviour
         // 解析当前文本获取字符数据
         ParseCharacters(textInput.text, ref _characters);
         // 获取选中范围内的字符
-        var selectedCharacters = GetSelectedCharacters();
+        var selectedCharacters = _characters.Where(character =>
+            character.position >= start && character.position < end).ToList();
         if (selectedCharacters.Count == 0)
         {
             Debug.LogWarning("选中范围内没有字符喵～");
@@ -285,7 +234,10 @@ public class RichTextEditor : MonoBehaviour
         textInput.text = newText;
         // 重新聚焦到输入框，避免丢失焦点
         textInput.ActivateInputField();
-        Debug.Log($"Bold应用完成喵！操作: {(allHaveBold ? "移除" : "添加")}bold标签");
+        textInput.selectionAnchorPosition = start;
+        textInput.selectionFocusPosition = end;
+        Debug.Log(
+            $"Bold应用完成喵！操作: {(allHaveBold ? "移除" : "添加")}bold标签 _selectionStartPos:{start} _selectionEndPos:{end}");
     }
 
     /// <summary>
@@ -373,14 +325,5 @@ public class RichTextEditor : MonoBehaviour
         }
 
         return result.ToString();
-    }
-
-    /// <summary>
-    /// 获取选中范围内的字符
-    /// </summary>
-    private List<CharacterData> GetSelectedCharacters()
-    {
-        return _characters.Where(character =>
-            character.position >= _selectionStartPos && character.position < _selectionEndPos).ToList();
     }
 }

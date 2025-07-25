@@ -258,7 +258,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1048,13 +1048,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textInput: {fileID: 264920763}
-  richTextPanel: {fileID: 49719897}
   boldButton: {fileID: 410895497}
   italicButton: {fileID: 1713588862}
   underlineButton: {fileID: 993793160}
   strikethroughButton: {fileID: 689581619}
-  panelOffsetX: 10
-  panelOffsetY: 10
 --- !u!114 &572214124
 MonoBehaviour:
   m_ObjectHideFlags: 0
