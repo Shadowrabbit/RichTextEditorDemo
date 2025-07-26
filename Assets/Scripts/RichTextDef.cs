@@ -27,14 +27,6 @@ public static class RichTextDef
     };
 
     /// <summary>
-    /// 根据标签类型获取标签名
-    /// </summary>
-    public static string GetTagName(RichTextTagType tagType)
-    {
-        return TagMapping.GetValueOrDefault(tagType, "");
-    }
-
-    /// <summary>
     /// 根据标签名获取标签类型
     /// </summary>
     public static RichTextTagType? GetTagType(string tagName)
@@ -45,29 +37,5 @@ public static class RichTextDef
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// 从标签集合中移除指定标签
-    /// </summary>
-    public static byte RemoveTag(byte tags, RichTextTagType tagType)
-    {
-        return (byte)(tags & ~(byte)tagType);
-    }
-
-    /// <summary>
-    /// 添加标签到标签集合
-    /// </summary>
-    public static byte AddTag(byte tags, RichTextTagType tagType)
-    {
-        return (byte)(tags | (byte)tagType);
-    }
-
-    /// <summary>
-    /// 检查标签集合是否包含指定标签
-    /// </summary>
-    public static bool ContainsTag(byte tags, RichTextTagType tagType)
-    {
-        return (tags & (byte)tagType) != 0;
     }
 }
